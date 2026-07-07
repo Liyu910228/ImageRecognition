@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local data and uploads
+backend/data/app.db
+backend/data/model_settings.json
+backend/data/recognition_logs.jsonl
+backend/data/template_sources/
+backend/data/template_uploads/
+backend/data/uploads/
+backend/data/template_images/
+backend/data/product_templates/
+backend/data/vector_index.json
+
+# Generated outputs
+outputs/
+generated/
+
+# Excel lock files
+~$*.xlsx
+*.xlsx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
