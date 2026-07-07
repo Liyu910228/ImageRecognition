@@ -190,6 +190,7 @@ def sanitize_recognition_text(value: object) -> str:
     text = re.sub(r"(手机时间|服务器时间)[:：]?.*", " ", text)
     text = re.sub(r"\d{8,}/[^\n\r]*", " ", text)
     text = re.sub(r"(黑龙江省|哈尔滨市|齐齐哈尔市|牡丹江市|佳木斯市|大庆市|鸡西市|双鸭山市|伊春市|七台河市|鹤岗市|黑河市|绥化市|大兴安岭|巴彦县)[^\n\r]*", " ", text)
+    text = _remove_uncertain_series_mentions(text)
     text = text.strip(" ,，;；/、\t\r\n")
     return text if re.search(r"[A-Za-z0-9\u4e00-\u9fff]", text) else ""
 
@@ -237,7 +238,7 @@ def is_weak_edge_product_evidence(*values: object) -> bool:
 
 
 def snow_brand_matches(*values: object, snow_brands: list[str] | tuple[str, ...] | None = None) -> list[str]:
-    configured_brands = list(snow_brands or DEFAULT_SNOW_BRANDS)
+    configured_brands = _unique([*GENERIC_SNOW_BRANDS, *(snow_brands or DEFAULT_SNOW_BRANDS)])
     haystack = normalize_for_match(" ".join(str(value or "") for value in values))
     competitor_matches = competitor_brand_matches(*values)
     matches: list[str] = []
@@ -318,3 +319,11 @@ def _is_safe_gate_brand(value: object) -> bool:
     if re.fullmatch(r"[a-z]?\d+[a-z]?", normalized):
         return False
     return True
+
+
+def _remove_uncertain_series_mentions(text: str) -> str:
+    series = r"(?:勇闯天涯|SuperX|superx|纯生|经典|清爽|冰纯|晶尊|精酿|脸谱|匠心营造|Vine|vine)"
+    text = re.sub(rf"[（(]如?[^）)\n]*?{series}[^）)\n]*?[）)]", " ", text)
+    text = re.sub(rf"如\s*{series}(?:[、,，/]\s*{series})*\s*等", " ", text)
+    text = re.sub(r"(?:无法|不能|未能|难以|不确定|看不清|模糊)(?:识别|确认)?具体系列", " ", text)
+    return text
